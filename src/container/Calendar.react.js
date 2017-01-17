@@ -35,6 +35,7 @@ const RIGHT_CHEVRON = '\u276F';
 type Props = {
   // The core properties.
   selected?: Moment,
+  rangeSelected?: Moment,
   onChange?: (date: Moment) => void,
   slideThreshold?: number,
   // Minimum and maximum date.
@@ -80,9 +81,16 @@ export default class Calendar extends Component {
 
   constructor(props: Props) {
     super(props);
+
+    let focus = Moment().startOf('month');
+
+    if (Moment(props.selected).isValid()) {
+      focus = Moment(props.selected).startOf('month');
+    }
+
     this.state = {
       stage: props.startStage,
-      focus: Moment(props.selected).startOf('month'),
+      focus,
       monthOffset: 0,
     }
   }
@@ -186,6 +194,7 @@ export default class Calendar extends Component {
             <DaySelector
               focus={this.state.focus}
               selected={this.props.selected}
+              rangeSelected={this.props.rangeSelected}
               onFocus={this._changeFocus}
               onChange={(date) => this.props.onChange && this.props.onChange(date)}
               monthOffset={this.state.monthOffset}
