@@ -77,7 +77,7 @@ export default class Calendar extends Component {
     super(props);
     this.state = {
       stage: props.startStage,
-      focus: Moment(props.selected).startOf('month'),
+      focus: props.selected ? Moment(props.selected).startOf('month') : Moment().startOf('month'),
     }
   }
 
