@@ -11,7 +11,6 @@ import {
   LayoutAnimation,
   View,
   Text,
-  StyleSheet,
 } from 'react-native';
 
 // Component specific libraries.
@@ -170,6 +169,8 @@ export default class DaySelector extends Component {
                     iterator.isBetween(props.selected, props.rangeSelected, 'days', '[]') :
                     props.selected && iterator.isSame(props.selected, 'day'),
         today: iterator.isSame(Moment(), 'day'),
+        start: props.rangeSelected ? iterator.isSame(props.selected, 'day') : null,
+        end: props.rangeSelected ? iterator.isSame(props.rangeSelected, 'day') : null,
       };
       // Add it to the result here.
       iterator.add(1, 'day');
@@ -186,9 +187,9 @@ export default class DaySelector extends Component {
   render() {
     return (
       <View>
-        <View style={[styles.headerView, this.props.dayHeaderView]}>
+        <View style={this.props.dayHeaderView}>
           {_.map(Moment.weekdaysShort(true), (day) =>
-            <Text key={day} style={[styles.headerText, this.props.dayHeaderText]}>
+            <Text key={day} style={this.props.dayHeaderText}>
               {day}
             </Text>
           )}
@@ -196,7 +197,6 @@ export default class DaySelector extends Component {
         <View ref="wrapper" {...this._panResponder.panHandlers}>
           {_.map(this.state.days, (week, i) =>
             <View key={i} style={[
-                styles.rowView,
                 this.props.dayRowView,
                 i === this.state.days.length - 1 ? {
                   borderBottomWidth: 0,
@@ -205,25 +205,22 @@ export default class DaySelector extends Component {
               {_.map(week, (day, j) =>
                 <TouchableHighlight
                   key={j}
-                  style={[
-                    styles.dayView,
-                    this.props.dayView,
-                    day.selected ? this.props.daySelectedView : null
-                  ]}
                   activeOpacity={day.valid ? 0.8 : 1}
                   underlayColor='transparent'
-                  onPress={() => day.valid && this._onChange(day)}>
-                  <Text style={[
-                    styles.dayText,
-                    this.props.dayText,
-                    day.today ? this.props.dayTodayText : null,
-                    day.selected ? styles.selectedText : null,
-                    day.selected ? this.props.daySelectedText : null,
-                    day.valid ? null : styles.disabledText,
-                    day.valid ? null : this.props.dayDisabledText,
-                  ]}>
-                    {day.date}
-                  </Text>
+                  onPress={() => day.valid && this._onChange(day)}
+                  style={[
+                    this.props.dayView,
+                    day.selected ? this.props.daySelectedView : null,
+                  ]}
+                >
+                    <Text style={[
+                      this.props.dayText,
+                      day.today ? this.props.dayTodayText : null,
+                      day.selected ? this.props.daySelectedText : null,
+                      day.valid ? null : this.props.dayDisabledText,
+                    ]}>
+                      {day.date}
+                    </Text>
                 </TouchableHighlight>
               )}
             </View>
@@ -238,43 +235,3 @@ DaySelector.defaultProps = {
   minDate: Moment(),
   maxDate: Moment(),
 };
-
-const styles = StyleSheet.create({
-  headerView: {
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    flexGrow: 1,
-    flexDirection: 'row',
-    height: 35,
-  },
-  headerText: {
-    flexGrow: 1,
-    textAlign: 'center',
-  },
-  rowView: {
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    flexGrow: 1,
-    flexDirection: 'row',
-    height: 35,
-  },
-  dayView: {
-    flexGrow: 1,
-    margin: 5,
-  },
-  dayText: {
-    flexGrow: 1,
-    minWidth: 30,
-    padding: 5,
-    textAlign: 'center',
-  },
-  selectedText: {
-    borderRadius: 5,
-    borderWidth: 1,
-    fontWeight: 'bold',
-  },
-  disabledText: {
-    borderColor: 'grey',
-    color: 'grey',
-  },
-});

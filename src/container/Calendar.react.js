@@ -137,7 +137,7 @@ export default class Calendar extends Component {
   };
 
   render() {
-    const barStyle = StyleSheet.flatten([styles.barView, this.props.barView]);
+    const barStyle = StyleSheet.flatten(this.props.barView);
 
     const previousMonth = Moment(this.state.focus).subtract(1, 'month');
     const previousMonthValid = this.props.minDate.diff(Moment(previousMonth).endOf('month'), 'seconds') <= 0;
@@ -145,14 +145,9 @@ export default class Calendar extends Component {
     const nextMonthValid = this.props.maxDate.diff(Moment(nextMonth).startOf('month'), 'seconds') >= 0;
 
     return (
-      <View style={[{
-        minWidth: 300,
-        // Wrapper view default style.
-      },this.props.style]}>
-        <View style={{
-          flexDirection: 'row',
-        }}>
-          <View style={[styles.barView, this.props.barView]}>
+      <View style={this.props.style}>
+        <View style={{ flexDirection: 'row' }}>
+          <View style={this.props.barView}>
             { this.props.showArrows && this.state.stage === DAY_SELECTOR && previousMonthValid ?
               <TouchableHighlight
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -186,7 +181,7 @@ export default class Calendar extends Component {
           </View>
         </View>
         <View
-          style={[styles.stageWrapper, this.props.stageView]}>
+          style={this.props.stageView}>
           {
             this.state.stage === DAY_SELECTOR ?
             <DaySelector
@@ -246,21 +241,3 @@ Calendar.defaultProps = {
   startStage: DAY_SELECTOR,
   showArrows: false,
 };
-
-const styles = StyleSheet.create({
-  barView: {
-    flexGrow: 1,
-    flexDirection: 'row',
-    padding: 5,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  nextStage: {
-    padding: 5,
-    alignItems: 'center',
-  },
-  stageWrapper: {
-    padding: 5,
-    overflow: 'hidden',
-  },
-});
