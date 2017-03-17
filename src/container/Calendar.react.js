@@ -13,6 +13,7 @@ import {
   Text,
   TouchableHighlight,
   StyleSheet,
+  Image,
 } from 'react-native';
 
 // Component specific libraries.
@@ -44,20 +45,18 @@ type Props = {
   // The starting stage for selection. Defaults to day.
   startStage: Stage,
   // General styling properties.
+  calendarStyles?: React.PropTypes.object,
+
   style?: View.propTypes.style,
-  barView?: View.propTypes.style,
-  barText?: Text.propTypes.style,
+
   stageView?: View.propTypes.style,
   showArrows: boolean,
+  leftIcon: React.PropTypes.any,
+  rightIcon: React.PropTypes.any,
+
+  weekRowHeight: React.PropTypes.number,
   // Styling properties for selecting the day.
-  dayHeaderView?: View.propTypes.style,
-  dayHeaderText?: Text.propTypes.style,
-  dayRowView?: View.propTypes.style,
-  dayView?: View.propTypes.style,
-  daySelectedView?: View.propTypes.style,
-  dayText?: Text.propTypes.style,
   dayTodayText?: Text.propTypes.style,
-  daySelectedText?: Text.propTypes.style,
   dayDisabledText?: Text.propTypes.style,
   // Styling properties for selecting the month.
   monthText?: Text.propTypes.style,
@@ -92,6 +91,7 @@ export default class Calendar extends Component {
       stage: props.startStage,
       focus,
       monthOffset: 0,
+      yearOffset: 0,
     }
   }
 
@@ -123,61 +123,82 @@ export default class Calendar extends Component {
     LayoutAnimation.easeInEaseOut();
   };
 
-  _previousMonth = () : void => {
-    this.setState({monthOffset: -1});
+  _goBackward = (stage) : void => {
+    if (stage === DAY_SELECTOR) {
+      this.setState({monthOffset: -1});
+    } else {
+      this.setState({yearOffset: -1});
+    }
   };
 
-  _nextMonth = () : void => {
-    this.setState({monthOffset: 1});
+  _goForward = (stage) : void => {
+    if (stage === DAY_SELECTOR) {
+      this.setState({monthOffset: 1});
+    } else {
+      this.setState({yearOffset: 1});
+    }
   };
 
   _changeFocus = (focus : Moment) : void => {
-    this.setState({focus, monthOffset: 0});
+    this.setState({focus, monthOffset: 0, yearOffset: 0});
     this._nextStage();
   };
 
   render() {
-    const barStyle = StyleSheet.flatten(this.props.barView);
+    const { calendarStyles, weekRowHeight, showArrows, minDate, maxDate } = this.props;
+    const { focus, stage } = this.state;
 
-    const previousMonth = Moment(this.state.focus).subtract(1, 'month');
-    const previousMonthValid = this.props.minDate.diff(Moment(previousMonth).endOf('month'), 'seconds') <= 0;
-    const nextMonth = Moment(this.state.focus).add(1, 'month');
-    const nextMonthValid = this.props.maxDate.diff(Moment(nextMonth).startOf('month'), 'seconds') >= 0;
+    const barStyle = StyleSheet.flatten(calendarStyles.headerBar);
+    const diffStage = stage === DAY_SELECTOR ? 'month' : 'year';
+
+    const previous = Moment(focus).subtract(1, diffStage);
+    const previousValid = minDate.diff(Moment(previous).endOf(diffStage), 'seconds') <= 0;
+    const next = Moment(focus).add(1, diffStage);
+    const nextValid = maxDate.diff(Moment(next).startOf(diffStage), 'seconds') >= 0;
 
     return (
       <View style={this.props.style}>
         <View style={{ flexDirection: 'row' }}>
-          <View style={this.props.barView}>
-            { this.props.showArrows && this.state.stage === DAY_SELECTOR && previousMonthValid ?
-              <TouchableHighlight
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                underlayColor={barStyle ? barStyle.backgroundColor : 'transparent'}
-                onPress={this._previousMonth}
-              >
-                <Text style={this.props.barText}>{LEFT_CHEVRON}</Text>
-              </TouchableHighlight> : <View/>
-            }
+          <View style={calendarStyles.headerBar}>
+            <TouchableHighlight
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              underlayColor={barStyle ? barStyle.backgroundColor : 'transparent'}
+              onPress={() => { if (showArrows && previousValid) { this._goBackward(stage); } }}
+              style={calendarStyles.arrowButton}
+            >
+              {
+                showArrows && previousValid ?
+                  <Image source={this.props.leftIcon} />
+                  : <View />
+              }
+            </TouchableHighlight>
 
             <TouchableHighlight
-              activeOpacity={this.state.stage !== YEAR_SELECTOR ? 0.8 : 1}
+              activeOpacity={stage !== YEAR_SELECTOR ? 0.8 : 1}
               underlayColor={barStyle ? barStyle.backgroundColor : 'transparent'}
-              onPress={this._previousStage}
+              onPress={() => {
+                if (stage === DAY_SELECTOR) {
+                  this._previousStage();
+                }
+              }}
               style={{ alignSelf: 'center' }}
             >
-              <Text style={this.props.barText}>
+              <Text style={calendarStyles.headerText}>
                 {this._stageText()}
               </Text>
             </TouchableHighlight>
 
-            { this.props.showArrows && this.state.stage === DAY_SELECTOR && nextMonthValid ?
-              <TouchableHighlight
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                underlayColor={barStyle ? barStyle.backgroundColor : 'transparent'}
-                onPress={this._nextMonth}
-              >
-                <Text style={this.props.barText}>{RIGHT_CHEVRON}</Text>
-              </TouchableHighlight> : <View/>
-            }
+            <TouchableHighlight
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              underlayColor={barStyle ? barStyle.backgroundColor : 'transparent'}
+              onPress={() => { if (showArrows && nextValid) { this._goForward(stage); } }}
+              style={calendarStyles.arrowButton}
+            >
+              { showArrows && nextValid ?
+                <Image source={this.props.rightIcon} />
+                : <View />
+              }
+            </TouchableHighlight>
           </View>
         </View>
         <View
@@ -196,20 +217,21 @@ export default class Calendar extends Component {
               // Control properties
               slideThreshold={this.props.slideThreshold}
               // Transfer the corresponding styling properties.
-              dayHeaderView={this.props.dayHeaderView}
-              dayHeaderText={this.props.dayHeaderText}
-              dayRowView={this.props.dayRowView}
-              dayView={this.props.dayView}
-              daySelectedView={this.props.daySelectedView}
-              dayText={this.props.dayText}
+              dayHeaderView={calendarStyles.dayNameBar}
+              dayHeaderText={calendarStyles.dayNameText}
+              dayRowView={[calendarStyles.weekRow, { height: weekRowHeight }]}
+              dayView={calendarStyles.individualDay}
+              daySelectedView={calendarStyles.activeDay}
+              dayText={calendarStyles.dayNumberText}
               dayTodayText={this.props.dayTodayText}
-              daySelectedText={this.props.daySelectedText}
-              dayDisabledText={this.props.dayDisabledText}
+              daySelectedText={calendarStyles.dayNumberActiveText}
+              dayDisabledText={calendarStyles.dayNumberDisabledText}
               /> :
             this.state.stage === MONTH_SELECTOR ?
             <MonthSelector
               focus={this.state.focus}
               onFocus={this._changeFocus}
+              yearOffset={this.state.yearOffset}
               minDate={this.props.minDate}
               maxDate={this.props.maxDate}
               // Styling properties
