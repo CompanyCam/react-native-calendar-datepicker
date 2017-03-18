@@ -139,9 +139,12 @@ export default class Calendar extends Component {
     }
   };
 
-  _changeFocus = (focus : Moment) : void => {
+  _changeFocus = (focus, nextStage = false) => {
     this.setState({focus, monthOffset: 0, yearOffset: 0});
-    this._nextStage();
+
+    if (nextStage) {
+      this._nextStage()
+    }
   };
 
   render() {
@@ -157,7 +160,7 @@ export default class Calendar extends Component {
     const nextValid = maxDate.diff(Moment(next).startOf(diffStage), 'seconds') >= 0;
 
     return (
-      <View style={this.props.style}>
+      <View style={calendarStyles.wrapper}>
         <View style={{ flexDirection: 'row' }}>
           <View style={calendarStyles.headerBar}>
             <TouchableHighlight
@@ -174,7 +177,7 @@ export default class Calendar extends Component {
             </TouchableHighlight>
 
             <TouchableHighlight
-              activeOpacity={stage !== YEAR_SELECTOR ? 0.8 : 1}
+              activeOpacity={stage === DAY_SELECTOR ? 0.8 : 1}
               underlayColor={barStyle ? barStyle.backgroundColor : 'transparent'}
               onPress={() => {
                 if (stage === DAY_SELECTOR) {
@@ -235,8 +238,9 @@ export default class Calendar extends Component {
               minDate={this.props.minDate}
               maxDate={this.props.maxDate}
               // Styling properties
-              monthText={this.props.monthText}
-              monthDisabledText={this.props.monthDisabledText}
+              monthText={calendarStyles.monthText}
+              monthDisabledText={calendarStyles.disabledMonthText}
+              group={calendarStyles.threeMonthRow}
               /> :
             this.state.stage === YEAR_SELECTOR ?
             <YearSelector
