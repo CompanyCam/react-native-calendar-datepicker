@@ -171,7 +171,7 @@ export default class Calendar extends Component {
             >
               {
                 showArrows && previousValid ?
-                  <Image source={this.props.leftIcon} />
+                  <Image style={calendarStyles.iconStyle} source={this.props.leftIcon} />
                   : <View />
               }
             </TouchableHighlight>
@@ -198,7 +198,7 @@ export default class Calendar extends Component {
               style={calendarStyles.arrowButton}
             >
               { showArrows && nextValid ?
-                <Image source={this.props.rightIcon} />
+                <Image style={calendarStyles.iconStyle} source={this.props.rightIcon} />
                 : <View />
               }
             </TouchableHighlight>
