@@ -151,7 +151,6 @@ export default class Calendar extends Component {
     const { calendarStyles, weekRowHeight, showArrows, minDate, maxDate } = this.props;
     const { focus, stage } = this.state;
 
-    const barStyle = StyleSheet.flatten(calendarStyles.headerBar);
     const diffStage = stage === DAY_SELECTOR ? 'month' : 'year';
 
     const previous = Moment(focus).subtract(1, diffStage);
@@ -164,8 +163,9 @@ export default class Calendar extends Component {
         <View style={{ flexDirection: 'row' }}>
           <View style={calendarStyles.headerBar}>
             <TouchableHighlight
+              activeOpacity={0.7}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              underlayColor={barStyle ? barStyle.backgroundColor : 'transparent'}
+              underlayColor="transparent"
               onPress={() => { if (showArrows && previousValid) { this._goBackward(stage); } }}
               style={calendarStyles.arrowButton}
             >
@@ -178,7 +178,7 @@ export default class Calendar extends Component {
 
             <TouchableHighlight
               activeOpacity={stage === DAY_SELECTOR ? 0.8 : 1}
-              underlayColor={barStyle ? barStyle.backgroundColor : 'transparent'}
+              underlayColor="transparent"
               onPress={() => {
                 if (stage === DAY_SELECTOR) {
                   this._previousStage();
@@ -192,8 +192,9 @@ export default class Calendar extends Component {
             </TouchableHighlight>
 
             <TouchableHighlight
+              activeOpacity={0.7}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              underlayColor={barStyle ? barStyle.backgroundColor : 'transparent'}
+              underlayColor="transparent"
               onPress={() => { if (showArrows && nextValid) { this._goForward(stage); } }}
               style={calendarStyles.arrowButton}
             >
