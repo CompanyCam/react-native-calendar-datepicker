@@ -19,15 +19,17 @@ import {
 // Component specific libraries.
 import _ from 'lodash';
 import Moment from 'moment';
+import 'moment/locale/es';
+import I18n from 'react-native-i18n';
 // Pure components importing.
 import YearSelector from '../pure/YearSelector.react';
 import MonthSelector from '../pure/MonthSelector.react';
 import DaySelector from '../pure/DaySelector.react';
 
 type Stage = "day" | "month" | "year";
-const DAY_SELECTOR : Stage = "day";
-const MONTH_SELECTOR : Stage = "month";
-const YEAR_SELECTOR : Stage = "year";
+const DAY_SELECTOR: Stage = "day";
+const MONTH_SELECTOR: Stage = "month";
+const YEAR_SELECTOR: Stage = "year";
 
 // Unicode characters
 const LEFT_CHEVRON = '\u276E';
@@ -73,6 +75,8 @@ type State = {
   focus: Moment,
 };
 
+Moment.locale(I18n.currentLocale());
+
 export default class Calendar extends Component {
   props: Props;
   state: State;
@@ -95,7 +99,7 @@ export default class Calendar extends Component {
     }
   }
 
-  _stageText = () : string => {
+  _stageText = (): string => {
     if (this.state.stage === DAY_SELECTOR) {
       return this.state.focus.format('MMMM YYYY');
     } else {
@@ -103,44 +107,44 @@ export default class Calendar extends Component {
     }
   }
 
-  _previousStage = () : void => {
+  _previousStage = (): void => {
     if (this.state.stage === DAY_SELECTOR) {
-      this.setState({stage: MONTH_SELECTOR})
+      this.setState({ stage: MONTH_SELECTOR })
     }
     if (this.state.stage === MONTH_SELECTOR) {
-      this.setState({stage: YEAR_SELECTOR})
+      this.setState({ stage: YEAR_SELECTOR })
     }
     LayoutAnimation.easeInEaseOut();
   };
 
-  _nextStage = () : void => {
+  _nextStage = (): void => {
     if (this.state.stage === MONTH_SELECTOR) {
-      this.setState({stage: DAY_SELECTOR})
+      this.setState({ stage: DAY_SELECTOR })
     }
     if (this.state.stage === YEAR_SELECTOR) {
-      this.setState({stage: MONTH_SELECTOR})
+      this.setState({ stage: MONTH_SELECTOR })
     }
     LayoutAnimation.easeInEaseOut();
   };
 
-  _goBackward = (stage) : void => {
+  _goBackward = (stage): void => {
     if (stage === DAY_SELECTOR) {
-      this.setState({monthOffset: -1});
+      this.setState({ monthOffset: -1 });
     } else {
-      this.setState({yearOffset: -1});
+      this.setState({ yearOffset: -1 });
     }
   };
 
-  _goForward = (stage) : void => {
+  _goForward = (stage): void => {
     if (stage === DAY_SELECTOR) {
-      this.setState({monthOffset: 1});
+      this.setState({ monthOffset: 1 });
     } else {
-      this.setState({yearOffset: 1});
+      this.setState({ yearOffset: 1 });
     }
   };
 
   _changeFocus = (focus, nextStage = false) => {
-    this.setState({focus, monthOffset: 0, yearOffset: 0});
+    this.setState({ focus, monthOffset: 0, yearOffset: 0 });
 
     if (nextStage) {
       this._nextStage()
@@ -198,7 +202,7 @@ export default class Calendar extends Component {
               onPress={() => { if (showArrows && nextValid) { this._goForward(stage); } }}
               style={calendarStyles.arrowButton}
             >
-              { showArrows && nextValid ?
+              {showArrows && nextValid ?
                 <Image style={calendarStyles.iconStyle} source={this.props.rightIcon} />
                 : <View />
               }
@@ -209,53 +213,53 @@ export default class Calendar extends Component {
           style={this.props.stageView}>
           {
             this.state.stage === DAY_SELECTOR ?
-            <DaySelector
-              focus={this.state.focus}
-              selected={this.props.selected}
-              rangeSelected={this.props.rangeSelected}
-              onFocus={this._changeFocus}
-              onChange={(date) => this.props.onChange && this.props.onChange(date)}
-              monthOffset={this.state.monthOffset}
-              minDate={this.props.minDate}
-              maxDate={this.props.maxDate}
-              // Control properties
-              slideThreshold={this.props.slideThreshold}
-              // Transfer the corresponding styling properties.
-              dayHeaderView={calendarStyles.dayNameBar}
-              dayHeaderText={calendarStyles.dayNameText}
-              dayRowView={[calendarStyles.weekRow, { height: weekRowHeight }]}
-              dayView={calendarStyles.individualDay}
-              daySelectedView={calendarStyles.activeDay}
-              dayText={calendarStyles.dayNumberText}
-              dayTodayText={this.props.dayTodayText}
-              daySelectedText={calendarStyles.dayNumberActiveText}
-              dayDisabledText={calendarStyles.dayNumberDisabledText}
+              <DaySelector
+                focus={this.state.focus}
+                selected={this.props.selected}
+                rangeSelected={this.props.rangeSelected}
+                onFocus={this._changeFocus}
+                onChange={(date) => this.props.onChange && this.props.onChange(date)}
+                monthOffset={this.state.monthOffset}
+                minDate={this.props.minDate}
+                maxDate={this.props.maxDate}
+                // Control properties
+                slideThreshold={this.props.slideThreshold}
+                // Transfer the corresponding styling properties.
+                dayHeaderView={calendarStyles.dayNameBar}
+                dayHeaderText={calendarStyles.dayNameText}
+                dayRowView={[calendarStyles.weekRow, { height: weekRowHeight }]}
+                dayView={calendarStyles.individualDay}
+                daySelectedView={calendarStyles.activeDay}
+                dayText={calendarStyles.dayNumberText}
+                dayTodayText={this.props.dayTodayText}
+                daySelectedText={calendarStyles.dayNumberActiveText}
+                dayDisabledText={calendarStyles.dayNumberDisabledText}
               /> :
-            this.state.stage === MONTH_SELECTOR ?
-            <MonthSelector
-              focus={this.state.focus}
-              onFocus={this._changeFocus}
-              yearOffset={this.state.yearOffset}
-              minDate={this.props.minDate}
-              maxDate={this.props.maxDate}
-              // Styling properties
-              monthText={calendarStyles.monthText}
-              monthDisabledText={calendarStyles.disabledMonthText}
-              group={calendarStyles.threeMonthRow}
-              /> :
-            this.state.stage === YEAR_SELECTOR ?
-            <YearSelector
-              focus={this.state.focus}
-              onFocus={this._changeFocus}
-              minDate={this.props.minDate}
-              maxDate={this.props.maxDate}
-              // Styling properties
-              minimumTrackTintColor={this.props.yearMinTintColor}
-              maximumTrackTintColor={this.props.yearMaxTintColor}
-              yearSlider={this.props.yearSlider}
-              yearText={this.props.yearText}
-              /> :
-            null
+              this.state.stage === MONTH_SELECTOR ?
+                <MonthSelector
+                  focus={this.state.focus}
+                  onFocus={this._changeFocus}
+                  yearOffset={this.state.yearOffset}
+                  minDate={this.props.minDate}
+                  maxDate={this.props.maxDate}
+                  // Styling properties
+                  monthText={calendarStyles.monthText}
+                  monthDisabledText={calendarStyles.disabledMonthText}
+                  group={calendarStyles.threeMonthRow}
+                /> :
+                this.state.stage === YEAR_SELECTOR ?
+                  <YearSelector
+                    focus={this.state.focus}
+                    onFocus={this._changeFocus}
+                    minDate={this.props.minDate}
+                    maxDate={this.props.maxDate}
+                    // Styling properties
+                    minimumTrackTintColor={this.props.yearMinTintColor}
+                    maximumTrackTintColor={this.props.yearMaxTintColor}
+                    yearSlider={this.props.yearSlider}
+                    yearText={this.props.yearText}
+                  /> :
+                  null
           }
         </View>
       </View>

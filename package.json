@@ -3,7 +3,8 @@
   "version": "1.1.6",
   "dependencies": {
     "lodash": "^4.15.0",
-    "moment": "^2.14.1"
+    "moment": "^2.14.1",
+    "react-native-i18n": "^2.0.12"
   },
   "description": "Cross platform calendar datepicker library for React Native.",
   "main": "index.js",
