@@ -19,8 +19,6 @@ import {
 // Component specific libraries.
 import _ from 'lodash';
 import Moment from 'moment';
-import 'moment/locale/es';
-import I18n from 'react-native-i18n';
 // Pure components importing.
 import YearSelector from '../pure/YearSelector.react';
 import MonthSelector from '../pure/MonthSelector.react';
@@ -74,8 +72,6 @@ type State = {
   // Focus points to the first day of the month that is in current focus.
   focus: Moment,
 };
-
-Moment.locale(I18n.currentLocale());
 
 export default class Calendar extends Component {
   props: Props;
