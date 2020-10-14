@@ -5,16 +5,17 @@
 
 console.ignoredYellowBox = ['Warning: Overriding '];
 
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import {
   LayoutAnimation,
   Slider,
   View,
   Text,
   TouchableHighlight,
-  StyleSheet,
   Image,
+  ViewPropTypes,
 } from 'react-native';
+import PropTypes from 'prop-types';
 
 // Component specific libraries.
 import _ from 'lodash';
@@ -33,39 +34,39 @@ const YEAR_SELECTOR: Stage = "year";
 const LEFT_CHEVRON = '\u276E';
 const RIGHT_CHEVRON = '\u276F';
 
-type Props = {
+const Props = {
   // The core properties.
-  selected?: Moment,
-  rangeSelected?: Moment,
-  onChange?: (date: Moment) => void,
-  slideThreshold?: number,
+  selected: PropTypes.object,
+  rangeSelected: PropTypes.object,
+  onChange: PropTypes.func,
+  slideThreshold: PropTypes.number,
   // Minimum and maximum date.
-  minDate: Moment,
-  maxDate: Moment,
+  minDate: PropTypes.object,
+  maxDate: PropTypes.object,
   // The starting stage for selection. Defaults to day.
-  startStage: Stage,
+  startStage: PropTypes.oneOf(["day", "month", "year"]),
   // General styling properties.
-  calendarStyles?: React.PropTypes.object,
+  calendarStyles: PropTypes.object,
 
-  style?: View.propTypes.style,
+  style: ViewPropTypes.style,
 
-  stageView?: View.propTypes.style,
-  showArrows: boolean,
-  leftIcon: React.PropTypes.any,
-  rightIcon: React.PropTypes.any,
+  stageView: ViewPropTypes.style,
+  showArrows: PropTypes.boolean,
+  leftIcon: PropTypes.any,
+  rightIcon: PropTypes.any,
 
-  weekRowHeight: React.PropTypes.number,
+  weekRowHeight: PropTypes.number,
   // Styling properties for selecting the day.
-  dayTodayText?: Text.propTypes.style,
-  dayDisabledText?: Text.propTypes.style,
+  dayTodayText: Text.propTypes.style,
+  dayDisabledText: Text.propTypes.style,
   // Styling properties for selecting the month.
-  monthText?: Text.propTypes.style,
-  monthDisabledText?: Text.propTypes.style,
+  monthText: Text.propTypes.style,
+  monthDisabledText: Text.propTypes.style,
   // Styling properties for selecting the year.
-  yearMinTintColor?: string,
-  yearMaxTintColor?: string,
-  yearSlider?: Slider.propTypes.style,
-  yearText?: Text.propTypes.style,
+  yearMinTintColor: PropTypes.string,
+  yearMaxTintColor: PropTypes.string,
+  yearSlider: PropTypes.any,
+  yearText: Text.propTypes.style,
 };
 type State = {
   stage: Stage,
